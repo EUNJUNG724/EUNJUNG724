@@ -1,0 +1,250 @@
+```react
+import React, { useState, useEffect } from 'react';
+import { 
+  ClipboardCheck, 
+  PhoneCall, 
+  BookOpen, 
+  Users, 
+  PlusCircle, 
+  Bell, 
+  Search,
+  ChevronRight,
+  Menu,
+  X,
+  Stethoscope,
+  ShieldAlert
+} from 'lucide-react';
+
+const App = () => {
+  const [activeTab, setActiveTab] = useState('home');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [notifications, setNotifications] = useState(3);
+
+  // 대시보드 데이터 모듈
+  const dashboardStats = [
+    { label: '오늘의 점검', value: '2/5', color: 'bg-blue-500' },
+    { label: '상담 예정', value: '4명', color: 'bg-green-500' },
+    { label: '미결함 사항', value: '1건', color: 'bg-red-500' },
+  ];
+
+  const quickMenus = [
+    { id: 'check', title: '현장 점검', icon: <ClipboardCheck size={24} />, color: 'text-blue-600', bg: 'bg-blue-100' },
+    { id: 'call', title: '비상 연락', icon: <PhoneCall size={24} />, color: 'text-red-600', bg: 'bg-red-100' },
+    { id: 'msds', title: 'MSDS 조회', icon: <BookOpen size={24} />, color: 'text-amber-600', bg: 'bg-amber-100' },
+    { id: 'consult', title: '건강 상담', icon: <Users size={24} />, color: 'text-teal-600', bg: 'bg-teal-100' },
+  ];
+
+  const recentTasks = [
+    { id: 1, title: '3층 용접 작업장 조도 측정', time: '오전 10:30', status: '완료' },
+    { id: 2, title: '신규 입사자 배치전 건강진단 확인', time: '오후 01:00', status: '대기' },
+    { id: 3, title: '식당 조리종사자 위생 점검', time: '오후 03:00', status: '대기' },
+  ];
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'home':
+        return (
+          <div className="p-4 space-y-6 pb-24 animate-in fade-in duration-500">
+            {/* 상단 통계 카드 */}
+            <div className="grid grid-cols-3 gap-3">
+              {dashboardStats.map((stat, idx) => (
+                <div key={idx} className="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center">
+                  <span className="text-xs text-gray-500 mb-1">{stat.label}</span>
+                  <span className={`text-lg font-bold ${stat.color.replace('bg-', 'text-')}`}>{stat.value}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* 메인 퀵 메뉴 */}
+            <div className="grid grid-cols-2 gap-4">
+              {quickMenus.map((menu) => (
+                <button 
+                  key={menu.id}
+                  onClick={() => setActiveTab(menu.id)}
+                  className="flex flex-col items-center justify-center p-6 bg-white rounded-3xl shadow-sm border border-gray-100 active:scale-95 transition-transform"
+                >
+                  <div className={`p-4 rounded-2xl ${menu.bg} ${menu.color} mb-3`}>
+                    {menu.icon}
+                  </div>
+                  <span className="font-semibold text-gray-700">{menu.title}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* 최근 업무 리스트 */}
+            <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-bold text-lg text-gray-800">오늘의 스케줄</h3>
+                <button className="text-sm text-blue-600">전체보기</button>
+              </div>
+              <div className="space-y-4">
+                {recentTasks.map((task) => (
+                  <div key={task.id} className="flex items-center justify-between group">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-10 rounded-full ${task.status === '완료' ? 'bg-gray-200' : 'bg-blue-400'}`}></div>
+                      <div>
+                        <p className={`font-medium ${task.status === '완료' ? 'text-gray-400 line-through' : 'text-gray-800'}`}>
+                          {task.title}
+                        </p>
+                        <p className="text-xs text-gray-500">{task.time}</p>
+                      </div>
+                    </div>
+                    <ChevronRight size={18} className="text-gray-300" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      case 'check':
+        return (
+          <div className="p-4 space-y-4 pb-24">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <ClipboardCheck className="text-blue-600" /> 현장 점검 리스트
+            </h2>
+            {['소음/진동', '조도', '공기질', '보호구 착용', 'MSDS 게시'].map((item, i) => (
+              <div key={i} className="bg-white p-4 rounded-2xl flex items-center justify-between shadow-sm border border-gray-100">
+                <span className="font-medium">{item} 점검</span>
+                <input type="checkbox" className="w-6 h-6 rounded-lg text-blue-600 border-gray-300" />
+              </div>
+            ))}
+            <button className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg shadow-blue-200 active:bg-blue-700">
+              점검 완료 제출
+            </button>
+          </div>
+        );
+      case 'call':
+        return (
+          <div className="p-4 space-y-4 pb-24">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <ShieldAlert className="text-red-600" /> 비상 연락망
+            </h2>
+            {[
+              { name: '안전보건관리책임자', role: '공장장', phone: '010-1234-5678' },
+              { name: '인근 지정병원', role: '응급실', phone: '02-987-6543' },
+              { name: '119 안전센터', role: '긴급구조', phone: '119' },
+            ].map((contact, i) => (
+              <a href={`tel:${contact.phone}`} key={i} className="bg-white p-5 rounded-2xl flex items-center justify-between shadow-sm border border-red-50 pr-6 active:bg-red-50 transition-colors">
+                <div>
+                  <p className="text-xs text-red-500 font-bold mb-1">{contact.role}</p>
+                  <p className="font-bold text-lg">{contact.name}</p>
+                  <p className="text-gray-500">{contact.phone}</p>
+                </div>
+                <div className="bg-red-600 p-3 rounded-full text-white">
+                  <PhoneCall size={20} />
+                </div>
+              </a>
+            ))}
+          </div>
+        );
+      default:
+        return (
+          <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+            <p>준비 중인 페이지입니다.</p>
+            <button onClick={() => setActiveTab('home')} className="mt-4 text-blue-600 font-bold underline">홈으로 돌아가기</button>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 select-none overflow-x-hidden">
+      {/* 상단 헤더 */}
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="bg-blue-600 p-2 rounded-xl text-white">
+            <Stethoscope size={20} />
+          </div>
+          <h1 className="text-lg font-extrabold tracking-tight">Smart <span className="text-blue-600">Health</span></h1>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Bell size={24} className="text-gray-400" />
+            {notifications > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full border-2 border-white font-bold">
+                {notifications}
+              </span>
+            )}
+          </div>
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-600">
+            {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
+          </button>
+        </div>
+      </header>
+
+      {/* 사이드 메뉴 드로어 */}
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}>
+          <aside 
+            className="absolute right-0 top-0 h-full w-64 bg-white shadow-2xl p-6 animate-in slide-in-from-right duration-300"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="mb-8">
+              <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 mb-4 font-bold text-xl">보건</div>
+              <h2 className="font-bold text-xl">홍길동 보건관리자</h2>
+              <p className="text-sm text-gray-500">사업장: 서울 본사</p>
+            </div>
+            <nav className="space-y-4 font-semibold text-gray-600">
+              <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">마이페이지</div>
+              <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">지난 점검 보고서</div>
+              <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">전사 보건지표</div>
+              <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">설정</div>
+            </nav>
+            <button className="absolute bottom-10 left-6 right-6 p-4 border border-gray-200 rounded-xl text-gray-400 font-bold text-sm">
+              로그아웃
+            </button>
+          </aside>
+        </div>
+      )}
+
+      {/* 메인 콘텐츠 영역 */}
+      <main className="max-w-md mx-auto">
+        {renderContent()}
+      </main>
+
+      {/* 하단 플로팅 탭 바 */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 px-6 py-3 flex items-center justify-between pb-8">
+        <button 
+          onClick={() => setActiveTab('home')}
+          className={`flex flex-col items-center gap-1 ${activeTab === 'home' ? 'text-blue-600' : 'text-gray-400'}`}
+        >
+          <div className={`p-1 ${activeTab === 'home' ? 'bg-blue-50 rounded-lg' : ''}`}>
+             <PlusCircle size={24} className={activeTab === 'home' ? 'rotate-45 transition-transform' : ''} />
+          </div>
+          <span className="text-[10px] font-bold">홈</span>
+        </button>
+        <button 
+          onClick={() => setActiveTab('check')}
+          className={`flex flex-col items-center gap-1 ${activeTab === 'check' ? 'text-blue-600' : 'text-gray-400'}`}
+        >
+          <ClipboardCheck size={24} />
+          <span className="text-[10px] font-bold">점검</span>
+        </button>
+        <div className="relative -top-6">
+          <button className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-xl shadow-blue-200 border-4 border-slate-50 active:scale-90 transition-transform">
+            <Search size={28} />
+          </button>
+        </div>
+        <button 
+          onClick={() => setActiveTab('call')}
+          className={`flex flex-col items-center gap-1 ${activeTab === 'call' ? 'text-blue-600' : 'text-gray-400'}`}
+        >
+          <PhoneCall size={24} />
+          <span className="text-[10px] font-bold">비상</span>
+        </button>
+        <button 
+          onClick={() => setActiveTab('consult')}
+          className={`flex flex-col items-center gap-1 ${activeTab === 'consult' ? 'text-blue-600' : 'text-gray-400'}`}
+        >
+          <Users size={24} />
+          <span className="text-[10px] font-bold">상담</span>
+        </button>
+      </nav>
+    </div>
+  );
+};
+
+export default App;
+
+```
+
